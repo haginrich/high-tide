@@ -262,6 +262,8 @@ def get_favourites() -> None:
     except Exception:
         logger.exception("Error while getting Favourites")
 
+    playlist_and_favorite_playlists.sort(key = lambda playlist: playlist.name)
+
     logger.info(f"Favorite Artists: {len(favourite_artists)}")
     logger.info(f"Favorite Tracks: {len(favourite_tracks)}")
     logger.info(f"Favorite Albums: {len(favourite_albums)}")
