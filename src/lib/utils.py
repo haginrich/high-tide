@@ -259,6 +259,8 @@ def get_favourites() -> None:
     except Exception as e:
         print(e)
 
+    playlist_and_favorite_playlists.sort(key = lambda playlist: playlist.name)
+
     print(f"Favorite Artists: {len(favourite_artists)}")
     print(f"Favorite Tracks: {len(favourite_tracks)}")
     print(f"Favorite Albums: {len(favourite_albums)}")
