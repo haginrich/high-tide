@@ -331,7 +331,7 @@ class MPRIS(Server):
             "as", [self.player.playing_track.artist.name]
         )
         self.__metadata["mpris:length"] = GLib.Variant(
-            "x", self.player.query_duration() / 1000
+            "x", self.player.duration / 1000
         )
 
         # 320 px should always be fetched for example by queue logic
