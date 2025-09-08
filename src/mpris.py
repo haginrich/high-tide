@@ -333,9 +333,8 @@ class MPRIS(Server):
         self.__metadata["xesam:artist"] = GLib.Variant(
             "as", [self.player.playing_track.artist.name]
         )
-        self.__metadata["mpris:length"] = GLib.Variant(
-            "x", self.player.query_duration() / 1000
-        )
+        duration = self.player.query_duration() or self.player.duration
+        self.__metadata["mpris:length"] = GLib.Variant("x", duration / 1000)
 
         # 320 px should always be fetched for example by queue logic
         url = f"file://{utils.IMG_DIR}/{self.player.playing_track.album.id}_320.jpg"
