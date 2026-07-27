@@ -83,8 +83,6 @@ class HighTideWindow(Adw.ApplicationWindow):
     album_button = Gtk.Template.Child()
     copy_share_link = Gtk.Template.Child()
 
-    app_id_dialog = Gtk.Template.Child()
-
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
@@ -218,22 +216,7 @@ class HighTideWindow(Adw.ApplicationWindow):
 
         self.connect("notify::is-active", self.stop_video_in_background)
 
-        if not self.settings.get_boolean("app-id-change-understood"):
-            self.app_id_dialog.present(self)
-
         threading.Thread(target=utils.evict_cache, args=(utils.MUSIC_DIR, 5)).start()
-
-    @Gtk.Template.Callback("on_app_id_response_cb")
-    def on_app_id_response_cb(self, dialog, response):
-        self.app_id_dialog.close()
-
-    @Gtk.Template.Callback("on_app_id_check_toggled_cb")
-    def on_app_id_check_toggled_cb(self, check_btn):
-        self.app_id_dialog.set_response_enabled("close", check_btn.get_active())
-
-    @Gtk.Template.Callback("on_app_id_closed_cb")
-    def on_app_id_closed_cb(self, dialog):
-        self.settings.set_boolean("app-id-change-understood", True)
 
     #
     #   LOGIN
