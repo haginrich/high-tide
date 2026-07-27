@@ -1,6 +1,56 @@
 using Gtk 4.0;
 using Adw 1;
 
+Adw.AlertDialog secret_portal_dialog {
+  heading: _("Secret Portal Error");
+  body: _("High Tide relies on a Secret Portal to manage your sensitive information and an error occurred while initializing.\n\nMake sure you have a Secret Portal Backend Provider installed, like gnome-keyring.\n\nOr if you prefer to use a Secret Service Provider instead, you need to allow High Tide to interact with it, like this:");
+  can-close: false;
+  response => $secret_portal_dialog_response_cb();
+  extra-child: Box {
+    styles [
+      "card",
+    ]
+
+    Gtk.ScrolledWindow {
+      vscrollbar-policy: never;
+
+      child: Gtk.Label secret_service_override_command {
+        xalign: 0.0;
+        hexpand: true;
+        selectable: true;
+        margin-start: 10;
+        margin-end: 10;
+        margin-top: 10;
+        margin-bottom: 10;
+        label: "flatpak --user override --talk-name=org.freedesktop.secrets io.github.nokse22.high-tide";
+
+        styles [
+          "monospace",
+        ]
+      };
+    }
+
+    Gtk.Button {
+      icon-name: "copy-symbolic";
+      tooltip-text: _("Copy Command");
+      valign: center;
+      halign: end;
+      margin-start: 10;
+      margin-end: 10;
+      margin-top: 10;
+      margin-bottom: 10;
+      clicked => $copy_secret_service_override_command();
+
+      styles [
+        "flat",
+      ]
+    }
+  };
+  responses [
+    quit: "Quit"
+  ]
+}
+
 template $HighTideWindow: Adw.ApplicationWindow {
   default-width: 800;
   default-height: 600;

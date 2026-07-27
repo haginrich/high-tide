@@ -22,7 +22,7 @@ from gettext import gettext as _
 from typing import Callable
 
 import tidalapi
-from gi.repository import Adw, Gio, GLib, GObject, Gst, Gtk, Xdp
+from gi.repository import Adw, Gio, GLib, GObject, Gst, Gtk, Xdp, Gdk
 from tidalapi.media import Quality
 
 from .lib import HTCache, PlayerObject, RepeatType, SecretStore, utils
@@ -82,6 +82,8 @@ class HighTideWindow(Adw.ApplicationWindow):
     track_radio_button = Gtk.Template.Child()
     album_button = Gtk.Template.Child()
     copy_share_link = Gtk.Template.Child()
+
+    secret_portal_dialog = Gtk.Template.Child()
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -204,19 +206,30 @@ class HighTideWindow(Adw.ApplicationWindow):
 
         self.queue_widget_updated = False
 
-        self.secret_store = SecretStore(self.session)
+        try:
+            self.secret_store = SecretStore(self.session)
+        except Exception:
+            self.secret_portal_dialog.present(self)
 
         threading.Thread(target=self.th_login, args=()).start()
 
         MPRIS(self.player_object)
 
         self.portal = Xdp.Portal()
-
         self.portal.set_background_status(_("Playing Music"))
 
         self.connect("notify::is-active", self.stop_video_in_background)
 
         threading.Thread(target=utils.evict_cache, args=(utils.MUSIC_DIR, 5)).start()
+
+    @Gtk.Template.Callback("copy_secret_service_override_command")
+    def copy_secret_service_override_command (self):
+        clipboard = Gdk.Display().get_default().get_clipboard()
+        clipboard.set("flatpak --user override --talk-name=org.freedesktop.secrets io.github.nokse22.high-tide")
+
+    @Gtk.Template.Callback("secret_portal_dialog_response_cb")
+    def secret_portal_dialog_response_cb(self, *args):
+        self.get_application().quit()
 
     #
     #   LOGIN
